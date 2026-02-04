@@ -60,6 +60,37 @@ const partnersAPI = {
       throw error;
     }
   },
+
+  /**
+   * Approve a partner by ID
+   * @param {string} partnerId - Partner ID to approve
+   * @param {string} token - Authentication token
+   * @returns {Promise<Object>} Response data
+   */
+  approvePartner: async (partnerId, token) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/admin/partners/${partnerId}/approve`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          status: 'APPROVED',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error approving partner:', error);
+      throw error;
+    }
+  },
 };
 
 export default partnersAPI;

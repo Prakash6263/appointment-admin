@@ -106,6 +106,54 @@ const formattedPartners = response.partners.map((partner) => ({
     }
   };
 
+  const handleApprovePartner = async (partnerId, partnerName) => {
+    const result = await Swal.fire({
+      title: 'Approve Partner?',
+      text: `Are you sure you want to approve ${partnerName}?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#28a745',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Yes, approve it!',
+      cancelButtonText: 'Cancel',
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const token = localStorage.getItem('token');
+        await partnersAPI.approvePartner(partnerId, token);
+        
+        await Swal.fire({
+          title: 'Approved!',
+          text: 'Partner has been approved successfully.',
+          icon: 'success',
+          confirmButtonColor: '#0072FF',
+        });
+
+        // Update the partner status in the list
+        const updatedPartners = partners.map(partner => {
+          if (partner.id === partnerId) {
+            return {
+              ...partner,
+              status: 'APPROVED',
+              statusClass: 'bg-success',
+            };
+          }
+          return partner;
+        });
+        setPartners(updatedPartners);
+      } catch (error) {
+        console.error('Error approving partner:', error);
+        await Swal.fire({
+          title: 'Error!',
+          text: 'Failed to approve partner. Please try again.',
+          icon: 'error',
+          confirmButtonColor: '#0072FF',
+        });
+      }
+    }
+  };
+
   const columns = [
     { 
       header: '#', 
@@ -136,6 +184,15 @@ const formattedPartners = response.partners.map((partner) => ({
       accessor: 'action',
       render: (row) => (
         <>
+          {row.status === 'PENDING' && (
+            <button 
+              className="btn btn-sm btn-success me-1"
+              onClick={() => handleApprovePartner(row.id, row.name)}
+              title="Approve Partner"
+            >
+              <i className="fa fa-check"></i>
+            </button>
+          )}
           <button className="btn btn-sm btn-warning me-1">
             <i className="fa fa-edit"></i>
           </button>
