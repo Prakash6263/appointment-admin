@@ -17,8 +17,6 @@ function AddMembership() {
     price: '',
     billingCycle: 'MONTHLY',
     customerLimit: '',
-    branding: false,
-    domain: false,
   });
 
   const handleChange = (e) => {
@@ -41,10 +39,6 @@ function AddMembership() {
         price: Number(formData.price),
         billingCycle: formData.billingCycle,
         customerLimit: Number(formData.customerLimit),
-        features: {
-          branding: formData.branding,
-          domain: formData.domain,
-        },
       };
 
       const data = await plans.createPlan(payload, token);
@@ -168,38 +162,6 @@ function AddMembership() {
                 onChange={handleChange}
                 required
               ></textarea>
-            </div>
-
-            <div className="col-md-12 mb-3">
-              <label className="form-label">Features</label>
-              <div className="d-flex gap-4">
-                <div className="form-check">
-                  <input
-                    type="checkbox"
-                    name="branding"
-                    className="form-check-input"
-                    id="branding"
-                    checked={formData.branding}
-                    onChange={handleChange}
-                  />
-                  <label className="form-check-label" htmlFor="branding">
-                    Custom Branding
-                  </label>
-                </div>
-                <div className="form-check">
-                  <input
-                    type="checkbox"
-                    name="domain"
-                    className="form-check-input"
-                    id="domain"
-                    checked={formData.domain}
-                    onChange={handleChange}
-                  />
-                  <label className="form-check-label" htmlFor="domain">
-                    Custom Domain
-                  </label>
-                </div>
-              </div>
             </div>
           </div>
 
