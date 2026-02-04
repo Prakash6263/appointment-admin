@@ -33,7 +33,7 @@ function DataTable({ columns, data }) {
   };
 
   return (
-    <div className="table-responsive">
+    <div>
       <div className="dataTable-top p-3">
         <div className="dataTable-dropdown">
           <select className="form-select form-select-sm" value={perPage} onChange={handlePerPageChange}>
@@ -54,36 +54,38 @@ function DataTable({ columns, data }) {
         </div>
       </div>
 
-      <table className="table table-hover align-middle datatable">
-        <thead>
-          <tr>
-            {columns.map((col, index) => (
-              <th key={index} width={col.width}>
-                {col.header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedData.length > 0 ? (
-            paginatedData.map((row, rowIndex) => (
-              <tr key={rowIndex}>
-                {columns.map((col, colIndex) => (
-                  <td key={colIndex}>
-                    {col.render ? col.render(row) : row[col.accessor]}
-                  </td>
-                ))}
-              </tr>
-            ))
-          ) : (
+      <div className="table-responsive" style={{ overflowX: 'auto', maxWidth: '100%' }}>
+        <table className="table table-hover align-middle datatable" style={{ minWidth: '1200px' }}>
+          <thead>
             <tr>
-              <td colSpan={columns.length} className="text-center">
-                No records found
-              </td>
+              {columns.map((col, index) => (
+                <th key={index} style={{ whiteSpace: 'nowrap', minWidth: col.width || '120px' }}>
+                  {col.header}
+                </th>
+              ))}
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {paginatedData.length > 0 ? (
+              paginatedData.map((row, rowIndex) => (
+                <tr key={rowIndex}>
+                  {columns.map((col, colIndex) => (
+                    <td key={colIndex} style={{ whiteSpace: 'nowrap' }}>
+                      {col.render ? col.render(row) : row[col.accessor]}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={columns.length} className="text-center">
+                  No records found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
       <div className="dataTable-bottom p-3 d-flex justify-content-between align-items-center">
         <div className="dataTable-info">
