@@ -98,19 +98,15 @@ function AddMembership() {
           <div className="row">
             <div className="col-md-6 mb-3">
               <label className="form-label">Plan Name</label>
-              <select
+              <input
+                type="text"
                 name="name"
-                className="form-select"
+                className="form-control"
+                placeholder="Enter plan name"
                 value={formData.name}
                 onChange={handleChange}
                 required
-              >
-                <option value="">Select a plan</option>
-                <option value="Free">Free</option>
-                <option value="Starter">Starter</option>
-                <option value="Pro">Pro</option>
-                <option value="Enterprise">Enterprise</option>
-              </select>
+              />
             </div>
 
             <div className="col-md-6 mb-3">
