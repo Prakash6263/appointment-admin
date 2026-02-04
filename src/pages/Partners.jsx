@@ -1,30 +1,92 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import DataTable from '../components/common/DataTable';
+import partnersAPI from '../api/partnerApi';
 
 function Partners() {
-  const partners = [
-    { id: 1, name: 'AC Service Pro', type: 'AC Repair', membership: 'Premium', membershipClass: 'bg-warning', providers: 8, phone: '9876543210', revenue: '₹1,25,000', status: 'Active', statusClass: 'bg-success' },
-    { id: 2, name: 'Quick Plumbing', type: 'Plumbing', membership: 'Standard', membershipClass: 'bg-primary', providers: 6, phone: '9123456780', revenue: '₹92,000', status: 'Active', statusClass: 'bg-success' },
-    { id: 3, name: 'Home Electric', type: 'Electrical', membership: 'Basic', membershipClass: 'bg-secondary', providers: 5, phone: '9988776655', revenue: '₹65,500', status: 'Inactive', statusClass: 'bg-warning' },
-    { id: 4, name: 'Clean Master', type: 'Cleaning', membership: 'Standard', membershipClass: 'bg-primary', providers: 7, phone: '9090909090', revenue: '₹78,300', status: 'Active', statusClass: 'bg-success' },
-    { id: 5, name: 'Pest Control Hub', type: 'Pest Control', membership: 'Premium', membershipClass: 'bg-warning', providers: 9, phone: '8888777766', revenue: '₹1,10,400', status: 'Active', statusClass: 'bg-success' },
-    { id: 6, name: 'Appliance Fixer', type: 'Appliance Repair', membership: 'Basic', membershipClass: 'bg-secondary', providers: 4, phone: '7777666655', revenue: '₹48,900', status: 'Suspended', statusClass: 'bg-danger' },
-    { id: 7, name: 'Urban Technician', type: 'Multi Service', membership: 'Premium', membershipClass: 'bg-warning', providers: 3, phone: '9999888877', revenue: '₹55,000', status: 'Active', statusClass: 'bg-success' },
-  ];
+  const [partners, setPartners] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchPartners = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem('token');
+        
+        const response = await partnersAPI.getAllPartners(token);
+
+if (response && Array.isArray(response.partners)) {
+const formattedPartners = response.partners.map((partner) => ({
+  id: partner._id,
+  shortId: partner._id.slice(-6).toUpperCase(),
+
+  name: partner.ownerName || 'N/A',
+  email: partner.email || 'N/A',
+  phone: partner.phone || 'N/A',
+
+  businessName: partner.companyName || 'N/A',
+  businessType: partner.websiteName || 'N/A',
+
+  city: partner.city || 'N/A',
+  state: partner.state || 'N/A',
+
+  gstNumber: partner.gstNumber || 'N/A',
+
+  walletBalance: '₹0',
+  totalProviders: partner.providers?.length || 0,
+  totalRevenue: '₹0',
+
+  status: partner.status || 'PENDING',
+  statusClass: partner.status === 'ACTIVE' ? 'bg-success' : 'bg-warning',
+
+  isVerified: partner.isEmailVerified ? 'Verified' : 'Unverified',
+  verifiedClass: partner.isEmailVerified ? 'bg-success' : 'bg-danger',
+
+  createdAt: new Date(partner.createdAt).toLocaleDateString(),
+  updatedAt: partner.updatedAt
+    ? new Date(partner.updatedAt).toLocaleDateString()
+    : 'N/A',
+
+  originalData: partner,
+}))
+
+          setPartners(formattedPartners);
+          setError(null);
+        } else {
+          setError(response?.message || 'Failed to fetch partners');
+        }
+      } catch (err) {
+        console.error('Error fetching partners:', err);
+        setError(err.message || 'Error fetching partners');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPartners();
+  }, []);
 
   const columns = [
-    { header: '#', accessor: 'id' },
-    { header: 'Partner Name', accessor: 'name' },
-    { header: 'Service Type', accessor: 'type' },
     { 
-      header: 'Membership', 
-      accessor: 'membership',
-      render: (row) => <span className={`badge ${row.membershipClass}`}>{row.membership}</span>
+      header: '#', 
+      accessor: 'shortId',
+      render: (row) => row.shortId || 'N/A'
     },
-    { header: 'Total Providers', accessor: 'providers' },
+    { header: 'Partner Name', accessor: 'name' },
+    { header: 'Business Name', accessor: 'businessName' },
+    { header: 'Email', accessor: 'email' },
     { header: 'Phone', accessor: 'phone' },
-    { header: 'Total Revenue', accessor: 'revenue' },
+    { header: 'Business Type', accessor: 'businessType' },
+    { header: 'City', accessor: 'city' },
+    { header: 'Wallet Balance', accessor: 'walletBalance' },
+    { header: 'Providers', accessor: 'totalProviders' },
+    { header: 'Revenue', accessor: 'totalRevenue' },
+    { 
+      header: 'Verification', 
+      accessor: 'isVerified',
+      render: (row) => <span className={`badge ${row.verifiedClass}`}>{row.isVerified}</span>
+    },
     { 
       header: 'Status', 
       accessor: 'status',
@@ -45,6 +107,30 @@ function Partners() {
       ),
     },
   ];
+
+  if (loading) {
+    return (
+      <div className="card mb-3">
+        <div className="card-body text-center">
+          <div className="spinner-border" role="status">
+            <span className="sr-only">Loading...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="card mb-3">
+        <div className="card-body">
+          <div className="alert alert-danger" role="alert">
+            {error}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="card mb-3">

@@ -22,6 +22,7 @@ function Membership() {
         if (data.success) {
           const formattedPlans = data.data.map((plan, index) => ({
             id: plan._id,
+            shortId: plan.shortId,
             name: plan.name,
             price: `₹${plan.price}`,
             duration: plan.billingCycle,
@@ -59,8 +60,8 @@ function Membership() {
   const columns = [
     { 
       header: '#', 
-      accessor: 'id',
-      render: (row, index) => index + 1
+      accessor: 'shortId',
+      render: (row) => row.shortId || 'N/A'
     },
     { header: 'Plan Name', accessor: 'name' },
     { header: 'Price', accessor: 'price' },

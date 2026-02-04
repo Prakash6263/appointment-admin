@@ -17,8 +17,7 @@ function AddMembership() {
     price: '',
     billingCycle: 'MONTHLY',
     customerLimit: '',
-    branding: false,
-    domain: false,
+    providerLimit: '',
   });
 
   const handleChange = (e) => {
@@ -41,10 +40,7 @@ function AddMembership() {
         price: Number(formData.price),
         billingCycle: formData.billingCycle,
         customerLimit: Number(formData.customerLimit),
-        features: {
-          branding: formData.branding,
-          domain: formData.domain,
-        },
+        providerLimit: Number(formData.providerLimit),
       };
 
       const data = await plans.createPlan(payload, token);
@@ -104,15 +100,19 @@ function AddMembership() {
           <div className="row">
             <div className="col-md-6 mb-3">
               <label className="form-label">Plan Name</label>
-              <input
-                type="text"
+              <select
                 name="name"
-                className="form-control"
-                placeholder="Enter plan name"
+                className="form-select"
                 value={formData.name}
                 onChange={handleChange}
                 required
-              />
+              >
+                <option value="">Select a plan</option>
+                <option value="Free">Free</option>
+                <option value="Starter">Starter</option>
+                <option value="Pro">Pro</option>
+                <option value="Enterprise">Enterprise</option>
+              </select>
             </div>
 
             <div className="col-md-6 mb-3">
@@ -157,6 +157,20 @@ function AddMembership() {
               />
             </div>
 
+            <div className="col-md-6 mb-3">
+              <label className="form-label">Provider Limit</label>
+              <input
+                type="number"
+                name="providerLimit"
+                className="form-control"
+                placeholder="Enter provider limit"
+                value={formData.providerLimit}
+                onChange={handleChange}
+                min="1"
+                required
+              />
+            </div>
+
             <div className="col-md-12 mb-3">
               <label className="form-label">Description</label>
               <textarea
@@ -168,38 +182,6 @@ function AddMembership() {
                 onChange={handleChange}
                 required
               ></textarea>
-            </div>
-
-            <div className="col-md-12 mb-3">
-              <label className="form-label">Features</label>
-              <div className="d-flex gap-4">
-                <div className="form-check">
-                  <input
-                    type="checkbox"
-                    name="branding"
-                    className="form-check-input"
-                    id="branding"
-                    checked={formData.branding}
-                    onChange={handleChange}
-                  />
-                  <label className="form-check-label" htmlFor="branding">
-                    Custom Branding
-                  </label>
-                </div>
-                <div className="form-check">
-                  <input
-                    type="checkbox"
-                    name="domain"
-                    className="form-check-input"
-                    id="domain"
-                    checked={formData.domain}
-                    onChange={handleChange}
-                  />
-                  <label className="form-check-label" htmlFor="domain">
-                    Custom Domain
-                  </label>
-                </div>
-              </div>
             </div>
           </div>
 
