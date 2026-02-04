@@ -154,6 +154,66 @@ const formattedPartners = response.partners.map((partner) => ({
     }
   };
 
+  const handleTogglePartnerStatus = async (partnerId, partnerName, isActive) => {
+    const action = isActive ? 'disable' : 'enable';
+    const actionTitle = isActive ? 'Disable' : 'Enable';
+    const actionText = isActive 
+      ? `Are you sure you want to disable ${partnerName}?`
+      : `Are you sure you want to enable ${partnerName}?`;
+    const confirmButtonColor = isActive ? '#dc3545' : '#28a745';
+
+    const result = await Swal.fire({
+      title: `${actionTitle} Partner?`,
+      text: actionText,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: confirmButtonColor,
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: `Yes, ${action} it!`,
+      cancelButtonText: 'Cancel',
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const token = localStorage.getItem('token');
+        
+        if (isActive) {
+          await partnersAPI.disablePartner(partnerId, token);
+        } else {
+          await partnersAPI.enablePartner(partnerId, token);
+        }
+        
+        await Swal.fire({
+          title: `${actionTitle}ed!`,
+          text: `Partner has been ${action}d successfully.`,
+          icon: 'success',
+          confirmButtonColor: '#0072FF',
+        });
+
+        // Update the partner status in the list
+        const updatedPartners = partners.map(partner => {
+          if (partner.id === partnerId) {
+            return {
+              ...partner,
+              status: isActive ? 'INACTIVE' : 'ACTIVE',
+              statusClass: isActive ? 'bg-danger' : 'bg-success',
+            };
+          }
+          return partner;
+        });
+        setPartners(updatedPartners);
+      } catch (error) {
+        console.error(`Error ${action}ing partner:`, error);
+        await Swal.fire({
+          title: 'Error!',
+          text: `Failed to ${action} partner. Please try again.`,
+          icon: 'error',
+          confirmButtonColor: '#0072FF',
+        });
+      }
+    }
+  };
+
   const columns = [
     { 
       header: '#', 
@@ -182,28 +242,38 @@ const formattedPartners = response.partners.map((partner) => ({
     {
       header: 'Action',
       accessor: 'action',
-      render: (row) => (
-        <>
-          {row.status === 'PENDING' && (
+      render: (row) => {
+        const isActive = row.status === 'ACTIVE' || row.status === 'APPROVED';
+        return (
+          <>
+            {row.status === 'PENDING' && (
+              <button 
+                className="btn btn-sm btn-success me-1"
+                onClick={() => handleApprovePartner(row.id, row.name)}
+                title="Approve Partner"
+              >
+                <i className="fa fa-check"></i>
+              </button>
+            )}
             <button 
-              className="btn btn-sm btn-success me-1"
-              onClick={() => handleApprovePartner(row.id, row.name)}
-              title="Approve Partner"
+              className={`btn btn-sm me-1 ${isActive ? 'btn-danger' : 'btn-success'}`}
+              onClick={() => handleTogglePartnerStatus(row.id, row.name, isActive)}
+              title={isActive ? 'Disable Partner' : 'Enable Partner'}
             >
-              <i className="fa fa-check"></i>
+              <i className={`fa fa-${isActive ? 'power-off' : 'check-circle'}`}></i>
             </button>
-          )}
-          <button className="btn btn-sm btn-warning me-1">
-            <i className="fa fa-edit"></i>
-          </button>
-          <button 
-            className="btn btn-sm btn-danger"
-            onClick={() => handleDeletePartner(row.id, row.name)}
-          >
-            <i className="fa fa-trash"></i>
-          </button>
-        </>
-      ),
+            <button className="btn btn-sm btn-warning me-1">
+              <i className="fa fa-edit"></i>
+            </button>
+            <button 
+              className="btn btn-sm btn-danger"
+              onClick={() => handleDeletePartner(row.id, row.name)}
+            >
+              <i className="fa fa-trash"></i>
+            </button>
+          </>
+        );
+      },
     },
   ];
 

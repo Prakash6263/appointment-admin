@@ -91,6 +91,62 @@ const partnersAPI = {
       throw error;
     }
   },
+
+  /**
+   * Disable a partner by ID
+   * @param {string} partnerId - Partner ID to disable
+   * @param {string} token - Authentication token
+   * @returns {Promise<Object>} Response data
+   */
+  disablePartner: async (partnerId, token) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/admin/partners/${partnerId}/disable`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error disabling partner:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Enable a partner by ID
+   * @param {string} partnerId - Partner ID to enable
+   * @param {string} token - Authentication token
+   * @returns {Promise<Object>} Response data
+   */
+  enablePartner: async (partnerId, token) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/admin/partners/${partnerId}/enable`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error enabling partner:', error);
+      throw error;
+    }
+  },
 };
 
 export default partnersAPI;
