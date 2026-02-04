@@ -2,8 +2,9 @@
  * Membership Plans and Partners API calls
  */
 
-const API_BASE_URL = 'http://localhost:5000/api';
-// const API_BASE_URL = 'https://appointment.aitechnotech.in/api';
+import { config } from '../config/config';
+
+const API_BASE_URL = config.API_BASE_URL;
 
 export const plans = {
   /**
