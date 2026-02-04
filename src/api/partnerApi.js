@@ -32,6 +32,34 @@ const partnersAPI = {
       throw error;
     }
   },
+
+  /**
+   * Delete a partner by ID
+   * @param {string} partnerId - Partner ID to delete
+   * @param {string} token - Authentication token
+   * @returns {Promise<Object>} Response data
+   */
+  deletePartner: async (partnerId, token) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/admin/partners/${partnerId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error deleting partner:', error);
+      throw error;
+    }
+  },
 };
 
 export default partnersAPI;

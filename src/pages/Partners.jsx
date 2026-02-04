@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import DataTable from '../components/common/DataTable';
 import partnersAPI from '../api/partnerApi';
 
@@ -67,6 +68,44 @@ const formattedPartners = response.partners.map((partner) => ({
     fetchPartners();
   }, []);
 
+  const handleDeletePartner = async (partnerId, partnerName) => {
+    const result = await Swal.fire({
+      title: 'Delete Partner?',
+      text: `Are you sure you want to delete ${partnerName}? This action cannot be undone.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const token = localStorage.getItem('token');
+        await partnersAPI.deletePartner(partnerId, token);
+        
+        await Swal.fire({
+          title: 'Deleted!',
+          text: 'Partner has been deleted successfully.',
+          icon: 'success',
+          confirmButtonColor: '#0072FF',
+        });
+
+        // Remove the deleted partner from the list
+        setPartners(partners.filter(partner => partner.id !== partnerId));
+      } catch (error) {
+        console.error('Error deleting partner:', error);
+        await Swal.fire({
+          title: 'Error!',
+          text: 'Failed to delete partner. Please try again.',
+          icon: 'error',
+          confirmButtonColor: '#0072FF',
+        });
+      }
+    }
+  };
+
   const columns = [
     { 
       header: '#', 
@@ -95,12 +134,15 @@ const formattedPartners = response.partners.map((partner) => ({
     {
       header: 'Action',
       accessor: 'action',
-      render: () => (
+      render: (row) => (
         <>
           <button className="btn btn-sm btn-warning me-1">
             <i className="fa fa-edit"></i>
           </button>
-          <button className="btn btn-sm btn-danger">
+          <button 
+            className="btn btn-sm btn-danger"
+            onClick={() => handleDeletePartner(row.id, row.name)}
+          >
             <i className="fa fa-trash"></i>
           </button>
         </>
