@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import DataTable from '../components/common/DataTable';
 import partnersAPI from '../api/partnerApi';
+import { config } from '../config/config';
 
 function Partners() {
   const [partners, setPartners] = useState([]);
@@ -228,7 +229,7 @@ const formattedPartners = response.partners.map((partner) => ({
       accessor: 'logo',
       width: '80px',
       render: (row) => row.logo ? (
-        <img src={row.logo} alt="Logo" style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }} />
+        <img src={`${config.IMAGE_BASE_URL}${row.logo}`} alt="Logo" style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }} />
       ) : (
         <span className="text-muted">N/A</span>
       )
@@ -238,7 +239,7 @@ const formattedPartners = response.partners.map((partner) => ({
       accessor: 'profileImage',
       width: '80px',
       render: (row) => row.profileImage ? (
-        <img src={row.profileImage} alt="Profile" style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '50%' }} />
+        <img src={`${config.IMAGE_BASE_URL}${row.profileImage}`} alt="Profile" style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '50%' }} />
       ) : (
         <span className="text-muted">N/A</span>
       )
