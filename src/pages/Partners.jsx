@@ -29,6 +29,9 @@ const formattedPartners = response.partners.map((partner) => ({
   businessName: partner.companyName || 'N/A',
   businessType: partner.websiteName || 'N/A',
 
+  logo: partner.logo || null,
+  profileImage: partner.profileImage || null,
+
   city: partner.city || 'N/A',
   state: partner.state || 'N/A',
 
@@ -219,6 +222,26 @@ const formattedPartners = response.partners.map((partner) => ({
       header: '#', 
       accessor: 'shortId',
       render: (row) => row.shortId || 'N/A'
+    },
+    { 
+      header: 'Logo', 
+      accessor: 'logo',
+      width: '80px',
+      render: (row) => row.logo ? (
+        <img src={row.logo} alt="Logo" style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }} />
+      ) : (
+        <span className="text-muted">N/A</span>
+      )
+    },
+    { 
+      header: 'Profile', 
+      accessor: 'profileImage',
+      width: '80px',
+      render: (row) => row.profileImage ? (
+        <img src={row.profileImage} alt="Profile" style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '50%' }} />
+      ) : (
+        <span className="text-muted">N/A</span>
+      )
     },
     { header: 'Partner Name', accessor: 'name' },
     { header: 'Business Name', accessor: 'businessName' },
